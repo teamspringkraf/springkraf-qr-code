@@ -62,7 +62,7 @@ export default class QRCodeStyling {
       const image64 = "data:image/svg+xml;base64," + svg64;
       const image = new Image();
 
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         image.onload = (): void => {
           this._canvas?.getContext("2d")?.drawImage(image, 0, 0);
           resolve();

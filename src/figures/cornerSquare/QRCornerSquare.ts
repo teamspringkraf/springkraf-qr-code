@@ -1,18 +1,19 @@
 import cornerSquareTypes from "../../constants/cornerSquareTypes";
-import { CornerSquareType, DrawArgs, BasicFigureDrawArgs, RotateFigureArgs } from "../../types";
+import type { DrawArgs, BasicFigureDrawArgs, RotateFigureArgs, Options } from "../../types";
 
+type QRCornerSquareOptions = Options["cornersSquareOptions"];
 export default class QRCornerSquare {
   _element?: SVGElement;
   _svg: SVGElement;
-  _type: CornerSquareType;
+  _options: QRCornerSquareOptions;
 
-  constructor({ svg, type }: { svg: SVGElement; type: CornerSquareType }) {
+  constructor({ svg, options }: { svg: SVGElement; options: QRCornerSquareOptions }) {
     this._svg = svg;
-    this._type = type;
+    this._options = options;
   }
 
   draw(x: number, y: number, size: number, rotation: number): void {
-    const type = this._type;
+    const type = this._options?.type;
     let drawFunction;
 
     switch (type) {
@@ -49,12 +50,14 @@ export default class QRCornerSquare {
         this._element.setAttribute("clip-rule", "evenodd");
         this._element.setAttribute(
           "d",
-          `M ${x + size / 2} ${y}` + // M cx, y //  Move to top of ring
-            `a ${size / 2} ${size / 2} 0 1 0 0.1 0` + // a outerRadius, outerRadius, 0, 1, 0, 1, 0 // Draw outer arc, but don't close it
-            `z` + // Z // Close the outer shape
-            `m 0 ${dotSize}` + // m -1 outerRadius-innerRadius // Move to top point of inner radius
-            `a ${size / 2 - dotSize} ${size / 2 - dotSize} 0 1 1 -0.1 0` + // a innerRadius, innerRadius, 0, 1, 1, -1, 0 // Draw inner arc, but don't close it
+          [
+            `M ${x + size / 2} ${y}`, // M cx, y //  Move to top of ring
+            `a ${size / 2} ${size / 2} 0 1 0 0.1 0`, // a outerRadius, outerRadius, 0, 1, 0, 1, 0 // Draw outer arc, but don't close it
+            `z`, // Z // Close the outer shape
+            `m 0 ${dotSize}`, // m -1 outerRadius-innerRadius // Move to top point of inner radius
+            `a ${size / 2 - dotSize} ${size / 2 - dotSize} 0 1 1 -0.1 0`, // a innerRadius, innerRadius, 0, 1, 1, -1, 0 // Draw inner arc, but don't close it
             `Z` // Z // Close the inner ring. Actually will still work without, but inner ring will have one unit missing in stroke
+          ].join("")
         );
       }
     });
@@ -68,19 +71,31 @@ export default class QRCornerSquare {
       ...args,
       draw: () => {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        if (this._options?.customSvg != null) {
+          this._options.customSvg({
+            x,
+            y,
+            size,
+            dotSize,
+            element: this._element
+          });
+          return;
+        }
         this._element.setAttribute("clip-rule", "evenodd");
         this._element.setAttribute(
           "d",
-          `M ${x} ${y}` +
-            `v ${size}` +
-            `h ${size}` +
-            `v ${-size}` +
-            `z` +
-            `M ${x + dotSize} ${y + dotSize}` +
-            `h ${size - 2 * dotSize}` +
-            `v ${size - 2 * dotSize}` +
-            `h ${-size + 2 * dotSize}` +
+          [
+            `M ${x} ${y}`,
+            `v ${size}`,
+            `h ${size}`,
+            `v ${-size}`,
+            `z`,
+            `M ${x + dotSize} ${y + dotSize}`,
+            `h ${size - 2 * dotSize}`,
+            `v ${size - 2 * dotSize}`,
+            `h ${-size + 2 * dotSize}`,
             `z`
+          ].join("")
         );
       }
     });
@@ -94,28 +109,72 @@ export default class QRCornerSquare {
       ...args,
       draw: () => {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+        if (this._options?.customSvg != null) {
+          this._options.customSvg({
+            x,
+            y,
+            size,
+            dotSize,
+            element: this._element
+          });
+          return;
+        }
         this._element.setAttribute("clip-rule", "evenodd");
-        this._element.setAttribute(
-          "d",
-          `M ${x} ${y + 2.5 * dotSize}` +
-            `v ${2 * dotSize}` +
-            `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${dotSize * 2.5} ${dotSize * 2.5}` +
-            `h ${2 * dotSize}` +
-            `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${dotSize * 2.5} ${-dotSize * 2.5}` +
-            `v ${-2 * dotSize}` +
-            `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${-dotSize * 2.5} ${-dotSize * 2.5}` +
-            `h ${-2 * dotSize}` +
-            `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${-dotSize * 2.5} ${dotSize * 2.5}` +
-            `M ${x + 2.5 * dotSize} ${y + dotSize}` +
-            `h ${2 * dotSize}` +
-            `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${dotSize * 1.5} ${dotSize * 1.5}` +
-            `v ${2 * dotSize}` +
-            `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${-dotSize * 1.5} ${dotSize * 1.5}` +
-            `h ${-2 * dotSize}` +
-            `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${-dotSize * 1.5} ${-dotSize * 1.5}` +
-            `v ${-2 * dotSize}` +
-            `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${dotSize * 1.5} ${-dotSize * 1.5}`
-        );
+        // Elliptical has a more extreme curve to it.
+        if (
+          this._options?.drawMode === "elliptical" ||
+          this._options?.drawMode == null /* Preserve default setting */
+        ) {
+          this._element.setAttribute(
+            "d",
+            [
+              `M ${x} ${y + 2.5 * dotSize}`,
+              `v ${2 * dotSize}`,
+              `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${dotSize * 2.5} ${dotSize * 2.5}`,
+              `h ${2 * dotSize}`,
+              `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${dotSize * 2.5} ${-dotSize * 2.5}`,
+              `v ${-2 * dotSize}`,
+              `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${-dotSize * 2.5} ${-dotSize * 2.5}`,
+              `h ${-2 * dotSize}`,
+              `a ${2.5 * dotSize} ${2.5 * dotSize}, 0, 0, 0, ${-dotSize * 2.5} ${dotSize * 2.5}`,
+              `M ${x + 2.5 * dotSize} ${y + dotSize}`,
+              `h ${2 * dotSize}`,
+              `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${dotSize * 1.5} ${dotSize * 1.5}`,
+              `v ${2 * dotSize}`,
+              `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${-dotSize * 1.5} ${dotSize * 1.5}`,
+              `h ${-2 * dotSize}`,
+              `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${-dotSize * 1.5} ${-dotSize * 1.5}`,
+              `v ${-2 * dotSize}`,
+              `a ${1.5 * dotSize} ${1.5 * dotSize}, 0, 0, 1, ${dotSize * 1.5} ${-dotSize * 1.5}`
+            ].join("")
+          );
+        } else {
+          this._element.setAttribute(
+            "d",
+            [
+              // Consider turning these into values that can be modified so that user can adjust the curve?
+              `M ${x} ${y + 2.5 * dotSize}`,
+              `v ${2 * dotSize}`,
+              `q ${-0.2 * dotSize} ${2.7 * dotSize} ${2.5 * dotSize} ${2.5 * dotSize}`,
+              `h ${2 * dotSize}`,
+              `q ${2.7 * dotSize} ${0.2 * dotSize} ${2.5 * dotSize} ${-2.5 * dotSize}`,
+              `v ${-2 * dotSize}`,
+              `q ${0.2 * dotSize} ${-2.7 * dotSize} ${-2.5 * dotSize} ${-2.5 * dotSize}`,
+              `h ${-2 * dotSize}`,
+              `q ${-2.7 * dotSize} ${-0.2 * dotSize} ${-2.5 * dotSize} ${2.5 * dotSize}`,
+              `M ${x + 2.5 * dotSize} ${y + dotSize}`,
+              `h ${2 * dotSize}`,
+              `q ${1.6 * dotSize} ${-0.1 * dotSize} ${1.5 * dotSize} ${1.5 * dotSize}`,
+              `v ${2 * dotSize}`,
+              `q ${0.1 * dotSize} ${1.6 * dotSize} ${-1.5 * dotSize} ${1.5 * dotSize}`,
+              `h ${-2 * dotSize}`,
+              `q ${-1.6 * dotSize} ${0.1 * dotSize} ${-1.5 * dotSize} ${-1.5 * dotSize}`,
+              `v ${-2 * dotSize}`,
+              `q ${-0.1 * dotSize} ${-1.6 * dotSize} ${1.5 * dotSize} ${-1.5 * dotSize}`
+            ].join("")
+          );
+        }
       }
     });
   }

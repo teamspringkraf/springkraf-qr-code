@@ -2,6 +2,7 @@
     "compilerOptions": {
         "outDir": "./lib/",
         "sourceMap": true,
+        "lib": ["es2015", "dom"],
         "module": "es6",
         "target": "es5",
         "allowJs": true,

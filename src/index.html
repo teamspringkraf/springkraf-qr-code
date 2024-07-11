@@ -15,15 +15,20 @@
               data: "h",
               image: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
               dotsOptions: {
-                type: "extra-rounded",
+                type: "dots",
+                scale: 0.666,
                 gradient: {
                   type: "linear", //radial,
                   rotation: Math.PI/2,
                   colorStops: [{ offset: 0, color: 'blue' }, { offset: 0.5, color: 'red' }, { offset: 1, color: 'green' }]
                 },
               },
+              cornersDotOptions: {
+                type: 'extra-rounded',
+              },
               cornersSquareOptions: {
-                type: "rounded",
+                type: "extra-rounded",
+                drawMode: 'bezier',
                 gradient: {
                   type: "linear",
                   rotation: Math.PI * 0.2,

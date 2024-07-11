@@ -45,6 +45,11 @@ export default function sanitizeOptions(options: RequiredOptions): RequiredOptio
   if (newOptions.dotsOptions.gradient) {
     newOptions.dotsOptions.gradient = sanitizeGradient(newOptions.dotsOptions.gradient);
   }
+  if (newOptions.dotsOptions.scale == null) {
+    newOptions.dotsOptions.scale = 0;
+  } else {
+    newOptions.dotsOptions.scale = Math.max(0.01, Math.min(1, newOptions.dotsOptions.scale));
+  }
 
   if (newOptions.cornersSquareOptions) {
     newOptions.cornersSquareOptions = {

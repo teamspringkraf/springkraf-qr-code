@@ -180,7 +180,7 @@ export default class QRSVG {
     const dotSize = Math.floor(realQRSize / count);
     const xBeginning = Math.floor((options.width - count * dotSize) / 2);
     const yBeginning = Math.floor((options.height - count * dotSize) / 2);
-    const dot = new QRDot({ svg: this._element, type: options.dotsOptions.type });
+    const dot = new QRDot({ svg: this._element, options: options.dotsOptions });
 
     this._dotsClipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
     this._dotsClipPath.setAttribute("id", "clip-path-dot-color");
@@ -329,7 +329,7 @@ export default class QRSVG {
       }
 
       if (options.cornersSquareOptions?.type) {
-        const cornersSquare = new QRCornerSquare({ svg: this._element, type: options.cornersSquareOptions.type });
+        const cornersSquare = new QRCornerSquare({ svg: this._element, options: options.cornersSquareOptions });
 
         cornersSquare.draw(x, y, cornersSquareSize, rotation);
 
@@ -337,7 +337,7 @@ export default class QRSVG {
           cornersSquareClipPath.appendChild(cornersSquare._element);
         }
       } else {
-        const dot = new QRDot({ svg: this._element, type: options.dotsOptions.type });
+        const dot = new QRDot({ svg: this._element, options: options.dotsOptions });
 
         for (let i = 0; i < squareMask.length; i++) {
           for (let j = 0; j < squareMask[i].length; j++) {
@@ -378,7 +378,7 @@ export default class QRSVG {
       }
 
       if (options.cornersDotOptions?.type) {
-        const cornersDot = new QRCornerDot({ svg: this._element, type: options.cornersDotOptions.type });
+        const cornersDot = new QRCornerDot({ svg: this._element, options: options.cornersDotOptions });
 
         cornersDot.draw(x + dotSize * 2, y + dotSize * 2, cornersDotSize, rotation);
 
@@ -386,7 +386,7 @@ export default class QRSVG {
           cornersDotClipPath.appendChild(cornersDot._element);
         }
       } else {
-        const dot = new QRDot({ svg: this._element, type: options.dotsOptions.type });
+        const dot = new QRDot({ svg: this._element, options: options.dotsOptions });
 
         for (let i = 0; i < dotMask.length; i++) {
           for (let j = 0; j < dotMask[i].length; j++) {

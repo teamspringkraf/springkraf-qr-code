@@ -1,18 +1,20 @@
 import dotTypes from "../../constants/dotTypes";
-import { DotType, GetNeighbor, DrawArgs, BasicFigureDrawArgs, RotateFigureArgs } from "../../types";
+import type { RequiredOptions } from "../../core/QROptions";
+import type { GetNeighbor, DrawArgs, BasicFigureDrawArgs, RotateFigureArgs } from "../../types";
 
+type QRDotOptions = NonNullable<RequiredOptions["dotsOptions"]>;
 export default class QRDot {
   _element?: SVGElement;
   _svg: SVGElement;
-  _type: DotType;
+  _options: QRDotOptions;
 
-  constructor({ svg, type }: { svg: SVGElement; type: DotType }) {
+  constructor({ svg, options }: { svg: SVGElement; options: QRDotOptions }) {
     this._svg = svg;
-    this._type = type;
+    this._options = options;
   }
 
   draw(x: number, y: number, size: number, getNeighbor: GetNeighbor): void {
-    const type = this._type;
+    const type = this._options.type;
     let drawFunction;
 
     switch (type) {
@@ -53,10 +55,12 @@ export default class QRDot {
     this._rotateFigure({
       ...args,
       draw: () => {
+        // User should be able to change size of dots.
+        const scale = this._options.scale == null || this._options.type !== dotTypes.dots ? 1 : this._options.scale;
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         this._element.setAttribute("cx", String(x + size / 2));
         this._element.setAttribute("cy", String(y + size / 2));
-        this._element.setAttribute("r", String(size / 2));
+        this._element.setAttribute("r", String((size / 2) * scale));
       }
     });
   }
@@ -86,10 +90,12 @@ export default class QRDot {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
         this._element.setAttribute(
           "d",
-          `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size / 2}` + //draw line to left bottom corner + half of size right
-            `a ${size / 2} ${size / 2}, 0, 0, 0, 0 ${-size}` // draw rounded corner
+          [
+            `M ${x} ${y}`, //go to top left position
+            `v ${size}`, //draw line to left bottom corner
+            `h ${size / 2}`, //draw line to left bottom corner + half of size right
+            `a ${size / 2} ${size / 2}, 0, 0, 0, 0 ${-size}`
+          ].join("") // draw rounded corner
         );
       }
     });
@@ -105,11 +111,13 @@ export default class QRDot {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
         this._element.setAttribute(
           "d",
-          `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size}` + //draw line to right bottom corner
-            `v ${-size / 2}` + //draw line to right bottom corner + half of size top
+          [
+            `M ${x} ${y}`, //go to top left position
+            `v ${size}`, //draw line to left bottom corner
+            `h ${size}`, //draw line to right bottom corner
+            `v ${-size / 2}`, //draw line to right bottom corner + half of size top
             `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded corner
+          ].join("")
         );
       }
     });
@@ -125,10 +133,12 @@ export default class QRDot {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
         this._element.setAttribute(
           "d",
-          `M ${x} ${y}` + //go to top left position
-            `v ${size}` + //draw line to left bottom corner
-            `h ${size}` + //draw line to right bottom corner
+          [
+            `M ${x} ${y}`, //go to top left position
+            `v ${size}`, //draw line to left bottom corner
+            `h ${size}`, //draw line to right bottom corner
             `a ${size} ${size}, 0, 0, 0, ${-size} ${-size}` // draw rounded top right corner
+          ].join("")
         );
       }
     });
@@ -144,12 +154,14 @@ export default class QRDot {
         this._element = document.createElementNS("http://www.w3.org/2000/svg", "path");
         this._element.setAttribute(
           "d",
-          `M ${x} ${y}` + //go to left top position
-            `v ${size / 2}` + //draw line to left top corner + half of size bottom
-            `a ${size / 2} ${size / 2}, 0, 0, 0, ${size / 2} ${size / 2}` + // draw rounded left bottom corner
-            `h ${size / 2}` + //draw line to right bottom corner
-            `v ${-size / 2}` + //draw line to right bottom corner + half of size top
+          [
+            `M ${x} ${y}`, //go to left top position
+            `v ${size / 2}`, //draw line to left top corner + half of size bottom
+            `a ${size / 2} ${size / 2}, 0, 0, 0, ${size / 2} ${size / 2}`, // draw rounded left bottom corner
+            `h ${size / 2}`, //draw line to right bottom corner
+            `v ${-size / 2}`, //draw line to right bottom corner + half of size top
             `a ${size / 2} ${size / 2}, 0, 0, 0, ${-size / 2} ${-size / 2}` // draw rounded right top corner
+          ].join("")
         );
       }
     });

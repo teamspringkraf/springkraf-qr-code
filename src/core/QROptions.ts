@@ -26,6 +26,8 @@ export interface RequiredOptions extends Options {
     type: DotType;
     color: string;
     gradient?: Gradient;
+    /** Controls how big the dot should be drawn. Range is [0, 1). Only applies if the type is dot. */
+    scale: number;
   };
   backgroundOptions: {
     round: number;
@@ -54,7 +56,8 @@ const defaultOptions: RequiredOptions = {
   },
   dotsOptions: {
     type: "square",
-    color: "#000"
+    color: "#000",
+    scale: 1
   },
   backgroundOptions: {
     round: 0,

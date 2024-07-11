@@ -1,23 +1,27 @@
 import cornerDotTypes from "../../constants/cornerDotTypes";
-import { CornerDotType, RotateFigureArgs, BasicFigureDrawArgs, DrawArgs } from "../../types";
+import { RotateFigureArgs, BasicFigureDrawArgs, DrawArgs, Options } from "../../types";
 
+type QRCornerDotOptions = Options["cornersDotOptions"];
 export default class QRCornerDot {
   _element?: SVGElement;
   _svg: SVGElement;
-  _type: CornerDotType;
+  _options: QRCornerDotOptions;
 
-  constructor({ svg, type }: { svg: SVGElement; type: CornerDotType }) {
+  constructor({ svg, options: options }: { svg: SVGElement; options: QRCornerDotOptions }) {
     this._svg = svg;
-    this._type = type;
+    this._options = options;
   }
 
   draw(x: number, y: number, size: number, rotation: number): void {
-    const type = this._type;
+    const type = this._options?.type;
     let drawFunction;
 
     switch (type) {
       case cornerDotTypes.square:
         drawFunction = this._drawSquare;
+        break;
+      case cornerDotTypes.extraRounded:
+        drawFunction = this._drawExtraRounded;
         break;
       case cornerDotTypes.dot:
       default:
@@ -64,11 +68,33 @@ export default class QRCornerDot {
     });
   }
 
+  _basicExtraRounded(args: BasicFigureDrawArgs): void {
+    const { size, x, y } = args;
+
+    this._rotateFigure({
+      ...args,
+      draw: () => {
+        const borderRadiusScale = this._options?.radius == null ? 0.25 : this._options.radius;
+        this._element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        this._element.setAttribute("x", String(x));
+        this._element.setAttribute("y", String(y));
+        this._element.setAttribute("width", String(size));
+        this._element.setAttribute("height", String(size));
+        this._element.setAttribute("rx", String(size * borderRadiusScale));
+        this._element.setAttribute("ry", String(size * borderRadiusScale));
+      }
+    });
+  }
+
   _drawDot({ x, y, size, rotation }: DrawArgs): void {
     this._basicDot({ x, y, size, rotation });
   }
 
   _drawSquare({ x, y, size, rotation }: DrawArgs): void {
     this._basicSquare({ x, y, size, rotation });
+  }
+
+  _drawExtraRounded({ x, y, size, rotation }: DrawArgs): void {
+    this._basicExtraRounded({ x, y, size, rotation });
   }
 }

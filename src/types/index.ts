@@ -4,12 +4,13 @@ export interface UnknownObject {
 }
 
 export type DotType = "dots" | "rounded" | "classy" | "classy-rounded" | "square" | "extra-rounded";
-export type CornerDotType = "dot" | "square";
+export type CornerDotType = "dot" | "square" | "extra-rounded";
 export type CornerSquareType = "dot" | "square" | "extra-rounded";
 export type FileExtension = "svg" | "png" | "jpeg" | "webp";
 export type GradientType = "radial" | "linear";
 export type DrawType = "canvas" | "svg";
 export type ShapeType = "square" | "circle";
+export type RoundedCornerSquareDrawMode = "elliptical" | "bezier";
 
 export type Gradient = {
   type: GradientType;
@@ -126,16 +127,28 @@ export type Options = {
     type?: DotType;
     color?: string;
     gradient?: Gradient;
+    /** Controls how big the dot should be drawn. Range is [0, 1). Only applies if the type is dot. */
+    scale?: number;
   };
   cornersSquareOptions?: {
     type?: CornerSquareType;
     color?: string;
     gradient?: Gradient;
+    /** Only applicable when type is ``extra-rounded``. Sets how the corners of the square are drawn using SVG. */
+    drawMode?: RoundedCornerSquareDrawMode;
+    /**
+     * If user wants to create a custom SVG for the corner square, just in case the defaults do not match their intentions. This only applies if type is ``extra-rounded`` or ``square``. User is fully responsible for the customization of the SVG element.
+     *
+     * The element parameter contains a ``path`` svg element.
+     */
+    customSvg?(params: { x: number; y: number; size: number; dotSize: number; element: SVGElement }): string;
   };
   cornersDotOptions?: {
     type?: CornerDotType;
     color?: string;
     gradient?: Gradient;
+    /** Only applies when type is ``extra-rounded``. Determines the border radius of the corner dots. This value should contain a number in the range [0, 1) as it is a relative value dependent on the size of the corner dot itself, not an absolute value. */
+    radius?: number;
   };
   backgroundOptions?: {
     round?: number;
