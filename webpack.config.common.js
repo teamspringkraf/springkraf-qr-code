@@ -21,12 +21,6 @@ module.exports = {
         loader: "ts-loader",
         exclude: /node_modules/
       },
-      {
-        enforce: "pre",
-        test: /\.ts$/,
-        loader: "eslint-loader",
-        exclude: /node_modules/
-      }
     ]
   },
   plugins: [new CleanWebpackPlugin()],

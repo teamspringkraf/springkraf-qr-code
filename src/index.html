@@ -7,48 +7,55 @@
     <body>
         <div id="canvas"></div>
         <script type="text/javascript">
-            const options = {
-              shape: "circle",
-              type: 'svg',
-              width: 500,
-              height: 500,
-              data: "h",
-              image: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-              dotsOptions: {
-                type: "dots",
-                scale: 0.666,
-                gradient: {
-                  type: "linear", //radial,
-                  rotation: Math.PI/2,
-                  colorStops: [{ offset: 0, color: 'blue' }, { offset: 0.5, color: 'red' }, { offset: 1, color: 'green' }]
-                },
+          const IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg";            
+          const DEFAULT_GRADIENT = {
+            type: 'linear',
+            rotation: 45,
+            colorStops: [
+              {
+                color: '#329ce6',
+                offset: 0,
               },
-              cornersDotOptions: {
-                type: 'extra-rounded',
+              {
+                color: '#d733b5',
+                offset: 1,
               },
-              cornersSquareOptions: {
-                type: "extra-rounded",
-                drawMode: 'bezier',
-                gradient: {
-                  type: "linear",
-                  rotation: Math.PI * 0.2,
-                  colorStops: [{
-                    offset: 0,
-                    color: 'blue'
-                  }, {
-                    offset: 1,
-                    color: 'red'
-                  }]
-                },
-              },
-              imageOptions: {
-                crossOrigin: "anonymous",
-                margin: 30
-              }
-            };
-            const qrCode = new QRCodeStyling(options);
-
-            qrCode.append(document.getElementById("canvas"));
+            ],
+          };
+          const DEFAULT_QR_OPTIONS = {
+            margin: 2,
+            width: 512,
+            height: 512,
+            backgroundOptions: {
+              color: '#ffffff',
+            },
+            cornersSquareOptions: {
+              type: 'extra-rounded',
+              drawMode: 'bezier',
+            },
+            dotsOptions: {
+              type: 'dots',
+              scale: 0.66,
+              gradient: DEFAULT_GRADIENT,
+            },
+            imageOptions: {
+              imageSize: 0.3,
+              hideBackgroundDots: true,
+            },
+            image: IMAGE_URL,
+            shape: 'square',
+            type: 'svg',
+            data: 'Hello world',
+            cornersDotOptions: {
+              type: 'extra-rounded',
+            },
+            qrOptions: {
+              errorCorrectionLevel: 'H',
+              mode: 'Byte',
+            },
+          };
+          const qrCode = new QRCodeStyling(DEFAULT_QR_OPTIONS);
+          qrCode.append(document.getElementById("canvas"));
         </script>
     </body>
 </html>

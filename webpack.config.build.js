@@ -11,6 +11,13 @@ module.exports = (env, argv) => {
 
   if (argv.mode === "production") {
     config.devtool = "source-map";
+    // Only apply this plugin on production because it messes up hot reload.
+    config.module.rules.push({
+      enforce: "pre",
+      test: /\.ts$/,
+      loader: "eslint-loader",
+      exclude: /node_modules/
+    });
   }
 
   return config;
