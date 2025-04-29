@@ -248,3 +248,8 @@ extension|string (`'png' 'jpeg' 'webp' 'svg'`)|`'png'`      |File extension
 
 [MIT License](https://raw.githubusercontent.com/kozakdenys/qr-code-styling/master/LICENSE). Copyright (c) 2021 Denys Kozak
 
+# some-lib (Forked)
+
+This is a **fork** of [`originaluser/some-lib`](https://github.com/kozakdenys/qr-code-styling), originally created by [kozak](https://github.com/kozakdenys/qr-code-styling).
+
+<!-- > 📦 Published on npm as [`@yourorg/some-lib`](https://www.npmjs.com/package/@yourorg/some-lib) -->
